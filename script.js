@@ -1,4 +1,5 @@
 const productNameInput = document.getElementById('product-name');
+const productCountInput = document.getElementById('product-count');
 const productPriceInput = document.getElementById('product-price');
 const addProductButton = document.getElementById('add-product');
 const cart = document.getElementById('cart');
@@ -14,23 +15,29 @@ function handleAddProduct(event) {
     alert("Please enter a product name")
     return
   }
+  if (productCountInput.value < 1) {
+    alert("Please enter a quantity greter than 0")
+    return
+  }
   if (productPriceInput.value < 1) {
     alert("Please enter a quantity greter than 0")
     return
   }
-  addListItem(productNameInput.value, productPriceInput.value)
+  addListItem(productNameInput.value, productCountInput.value, productPriceInput.value)
   productNameInput.value = ""
+  productCountInput.value = ""
   productPriceInput.value = ""
   productNameInput.focus()
 }
 
-function addListItem(productName, productPrice) {
+function addListItem(productName, productCount, productPrice) {
   let listItemProduct = document.createElement("li")
+  let listItemCount = document.createElement("li")
   let removeBtn = document.createElement("button")
   removeBtn.style.marginLeft = "50px"
   let lineSeparator = document.createElement("hr")
 
-  listItemProduct.textContent = `${productName}:$${productPrice}`
+  listItemProduct.textContent = `${productName}: ${productCount} @ $${productPrice}`
 
   removeBtn.textContent = "Remove Product"
 
@@ -38,7 +45,9 @@ function addListItem(productName, productPrice) {
 
   cart.appendChild(listItemProduct)
 
-  updateTotalPrice(parseFloat(productPrice))
+  let temmAmount = Number(productCount) * parseFloat(productPrice)
+
+  updateTotalPrice(temmAmount)
 }
 
 // Function to update the total price
@@ -53,11 +62,14 @@ cart.addEventListener("click", removeItem)
 function removeItem(event) {
   const item = event.target.closest('li');
 
-  let tempStr = item.textContent.split(":")
-  let productP = tempStr[1].replace(/\$/g, "")
+  let tempStr = item.textContent.split("@")
+  let str1 = tempStr[0].replace(/\$/g, "")
+  let tempProductCount = str1.split(":")
+  let productCount = tempProductCount[1]
 
-  console.log(productP)
-  const price = parseFloat(productP);
+  let productPrice = tempStr[1].replace(/\$/g, "")
+  let price = parseFloat(productCount) * parseFloat(productPrice)
+
   updateTotalPrice(-price);
   item.remove();
 }
